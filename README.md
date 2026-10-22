@@ -59,6 +59,17 @@ com tamanho mínimo, `SAMP/settings.ini` e `data/gta.dat`. O renderer ainda pode
 exigir arquivos adicionais; um pacote aprovado pelo validator não substitui o
 teste de boot em ARM32 e ARM64.
 
+### Origem do mapa exibido
+
+O mapa carregado pelo cliente vem dos arquivos binários extraídos do ZIP,
+principalmente `texdb/gta3.img`, `data/gta.dat`, modelos, colisões e texturas.
+O código CMake, o componente WebView e as includes Pawn não substituem o mapa.
+Se o jogo mostrar um mapa russo ou outro mapa que não seja o mapa original do
+GTA San Andreas, o ZIP instalado no aparelho não é uma data original compatível
+ou contém um mod de mapa. É necessário gerar uma nova release a partir de uma
+instalação limpa e licenciada do GTA SA, mantendo modelos, texturas, colisões e
+índices da mesma versão; não basta renomear `gta3.img`.
+
 ## Checklist de publicação
 
 1. Gerar o ZIP a partir de uma instalação limpa.
