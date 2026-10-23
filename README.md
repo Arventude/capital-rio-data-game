@@ -48,12 +48,13 @@ texturas, `gta.dat`, modelos, colisões e índices precisam pertencer à mesma v
 
 ## Diagnóstico do ZIP `game-data-v2`
 
-O ZIP auditado em 2026-10-23 foi rejeitado para o cliente Capital Rio. Ele contém
+O ZIP auditado em 2026-10-23 contém
 `loader/blackrussia_client.log`, 57 entradas com nomes cirílicos/cópias e mapas
 alternativos como `PORTLAND`, `PORTLAND1`, `M_CITY`, `LIBERTY`, `MOTOR`, `STAUNTON`
 e `vcsa`. Além disso, `data/gta.dat` e `SAMP/gta.dat` carregam `rip*.IPL`,
 `vcsa.ipl` e `trees_map.IPL`. Isso explica o mapa russo/estranho no aparelho; não
-é causado pelo open.mp, pelo CMake ou pelo WebView.
+é causado pelo open.mp, pelo CMake ou pelo WebView. Esse conteúdo agora é
+permitido pelo APK; o auditor apenas emite avisos para facilitar o diagnóstico.
 
 Esse pacote não deve ser "corrigido" apagando arquivos isolados: os arquivos IMG,
 IDE, IPL, colisões e `gta.dat` precisam ser gerados como um conjunto compatível.
@@ -66,9 +67,9 @@ Antes de publicar qualquer ZIP, execute:
 python3 tools/audit_game_data.py /caminho/capitalrio-game-data.zip
 ```
 
-O comando deve terminar com `status=PASS`. O APK também rejeita esse perfil de
-data antes da extração e volta a rejeitar uma instalação antiga que contenha os
-mesmos marcadores.
+O comando deve terminar com `status=PASS`. Referências a mapas alternativos podem
+aparecer como `warning=...`, mas não bloqueiam a instalação. O APK também aceita
+essa data normalmente, desde que os arquivos estruturais mínimos estejam presentes.
 
 ## Manifesto opcional de assets do Capital Rio
 

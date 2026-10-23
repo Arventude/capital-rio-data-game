@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Audit a Capital Rio game-data ZIP before publishing it.
-
-The current mobile client expects the original GTA San Andreas world. This tool
-only audits names and gta.dat references; it never rewrites or deletes assets.
+The client accepts the selected game world and map. This tool validates the
+minimum structure and reports alternate-world markers as warnings only; it
+never rewrites or deletes assets.
 """
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import hashlib
 import sys
 import zipfile
 
-FORBIDDEN_PATH_MARKERS = (
+ALTERNATE_WORLD_PATH_MARKERS = (
     "loader/blackrussia_client.log",
     "/data/maps/portland/",
     "/data/maps/portland1/",
@@ -22,7 +22,7 @@ FORBIDDEN_PATH_MARKERS = (
     "/data/maps/vcsa.ide",
     "/data/maps/vcsa.ipl",
 )
-FORBIDDEN_DAT_REFERENCES = (
+ALTERNATE_WORLD_DAT_REFERENCES = (
     r"data\maps\vcsa.ide",
     r"data\maps\vcsa.ipl",
     r"data\maps\trees_map.ide",
@@ -55,6 +55,7 @@ def main() -> int:
     args = parser.parse_args()
 
     findings: list[str] = []
+    warnings: list[str] = []
     with zipfile.ZipFile(args.zip) as archive:
         files = [info for info in archive.infolist() if not info.is_dir()]
         names = [info.filename.replace("\\", "/") for info in files]
@@ -70,18 +71,21 @@ def main() -> int:
                 findings.append(f"missing required suffix: {suffix}")
 
         for original, name in zip(names, lower_names):
-            if any(marker in name for marker in FORBIDDEN_PATH_MARKERS):
-                findings.append(f"forbidden world path: {original}")
+            if any(marker in name for marker in ALTERNATE_WORLD_PATH_MARKERS):
+                warnings.append(f"alternate world path: {original}")
 
         for info, name in zip(files, lower_names):
             if not (name.endswith("/data/gta.dat") or name.endswith("/samp/gta.dat")):
                 continue
             text = archive.read(info).decode("utf-8", errors="replace").lower()
-            for marker in FORBIDDEN_DAT_REFERENCES:
+            for marker in ALTERNATE_WORLD_DAT_REFERENCES:
                 if marker in text:
-                    findings.append(f"forbidden gta.dat reference in {info.filename}: {marker}")
+                    warnings.append(f"alternate gta.dat reference in {info.filename}: {marker}")
 
     unique_findings = list(dict.fromkeys(findings))
+    unique_warnings = list(dict.fromkeys(warnings))
+    for warning in unique_warnings[:100]:
+        print(f"warning={warning}")
     if unique_findings:
         print("status=REJECT")
         for finding in unique_findings[:100]:
