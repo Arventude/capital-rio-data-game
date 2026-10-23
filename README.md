@@ -46,6 +46,30 @@ Os arquivos `.idx` de áudio são obrigatórios quando referenciados pelo pacote
 criar índices vazios para esconder erro de instalação: todos os arquivos de áudio,
 texturas, `gta.dat`, modelos, colisões e índices precisam pertencer à mesma versão.
 
+## Diagnóstico do ZIP `game-data-v2`
+
+O ZIP auditado em 2026-10-23 foi rejeitado para o cliente Capital Rio. Ele contém
+`loader/blackrussia_client.log`, 57 entradas com nomes cirílicos/cópias e mapas
+alternativos como `PORTLAND`, `PORTLAND1`, `M_CITY`, `LIBERTY`, `MOTOR`, `STAUNTON`
+e `vcsa`. Além disso, `data/gta.dat` e `SAMP/gta.dat` carregam `rip*.IPL`,
+`vcsa.ipl` e `trees_map.IPL`. Isso explica o mapa russo/estranho no aparelho; não
+é causado pelo open.mp, pelo CMake ou pelo WebView.
+
+Esse pacote não deve ser "corrigido" apagando arquivos isolados: os arquivos IMG,
+IDE, IPL, colisões e `gta.dat` precisam ser gerados como um conjunto compatível.
+Gere a próxima release a partir de uma instalação limpa e licenciada do GTA San
+Andreas e aplique somente os assets Capital Rio planejados.
+
+Antes de publicar qualquer ZIP, execute:
+
+```bash
+python3 tools/audit_game_data.py /caminho/capitalrio-game-data.zip
+```
+
+O comando deve terminar com `status=PASS`. O APK também rejeita esse perfil de
+data antes da extração e volta a rejeitar uma instalação antiga que contenha os
+mesmos marcadores.
+
 ## Validação pelo APK
 
 `GameDataValidator.java` instala os dados em:
