@@ -71,6 +71,29 @@ O comando deve terminar com `status=PASS`. Referências a mapas alternativos pod
 aparecer como `warning=...`, mas não bloqueiam a instalação. O APK também aceita
 essa data normalmente, desde que os arquivos estruturais mínimos estejam presentes.
 
+## Crash no carregamento do mundo — 2026-10-23
+
+O logcat enviado após a troca da data mostra `SIGSEGV` em ARM64 nesta sequência:
+
+```text
+CBaseModelInfo::SetColModel
+CColAccel::cacheLoadCol
+CFileLoader::LoadLevel
+CGame::Initialise
+```
+
+Isso ocorre antes da conexão com o servidor e indica problema no conjunto de
+colisões/cache do mundo, não no WebView ou no RPC. O ZIP analisado contém somente
+`models/coll/peds.col`, `vehicles.col` e `weapons.col`, além de `CINFO.BIN`,
+`gta3.img` e mapas alternativos. Esses arquivos precisam ter sido gerados para a
+mesma versão; um `CINFO.BIN` ou cache de colisão de outra instalação pode derrubar
+o renderer nativo mesmo que o ZIP passe na validação estrutural.
+
+Ao trocar de data, não mescle os arquivos sobre a instalação anterior. Remova ou
+substitua toda a data como conjunto, mantendo apenas as preferências necessárias.
+O APK corrigido extrai em staging, valida e limpa a data antiga antes de copiar a
+nova, evitando a mistura silenciosa de colisões e mapas.
+
 ## Manifesto opcional de assets do Capital Rio
 
 Para assets próprios pequenos, o pacote pode conter `capitalrio/asset_manifest.v1`.
