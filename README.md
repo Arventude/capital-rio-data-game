@@ -70,6 +70,22 @@ O comando deve terminar com `status=PASS`. O APK também rejeita esse perfil de
 data antes da extração e volta a rejeitar uma instalação antiga que contenha os
 mesmos marcadores.
 
+## Manifesto opcional de assets do Capital Rio
+
+Para assets próprios pequenos, o pacote pode conter `capitalrio/asset_manifest.v1`.
+O arquivo usa uma linha por asset, separada por `|`, nesta ordem:
+
+```text
+# key|relativePath|sha256|version|sizeBytes|required
+ui.logo|capitalrio/ui/logo.bin|0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef|1|4096|1
+```
+
+O cliente valida caminho relativo, SHA-256, versão e tamanho antes de carregar o
+arquivo no cache nativo. Assets obrigatórios que falharem ficam fora do runtime;
+o cliente retorna ao fallback legado e registra o motivo no logcat. Na ausência do
+manifesto, o jogo também usa o fallback legado, portanto a instalação não depende
+de um arquivo que a release ainda não possua.
+
 ## Validação pelo APK
 
 `GameDataValidator.java` instala os dados em:
