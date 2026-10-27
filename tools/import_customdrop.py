@@ -60,7 +60,7 @@ def main() -> int:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
         digest = hashlib.sha256(data).hexdigest()
-        key = "customdrop/" + relative.removeprefix("mods/customdrop/").rsplit(".", 1)[0].replace("/", "_")
+        key = "customdrop/" + relative.removeprefix("mods/customdrop/").replace("/", "_")
         required = "1" if pathlib.PurePosixPath(relative).name in {"male.dff", "male.txd"} else "0"
         manifest_lines.append(f"{key}|{output_relative}|{digest}|1|{len(data)}|{required}")
 

@@ -177,3 +177,12 @@ instalação limpa e licenciada do GTA SA, mantendo modelos, texturas, colisões
 
 Os dados do jogo não incluem login, credenciais, banco de personagens ou código do
 servidor. Esses itens pertencem aos repositórios e serviços correspondentes.
+
+
+## Atualização do manifesto para o CapitalRioModLoader — 2026-10-27
+
+As chaves do `asset_manifest.v1` agora incluem a extensão do arquivo. Assim, `male.dff` e `male.txd` não colidem no parser. O manifesto atual possui 585 entradas únicas e foi validado pelo parser C++ do APK.
+
+O Android carrega inicialmente somente os quatro assets base marcados como obrigatórios. O `CapitalRioModLoader` busca sob demanda o DFF/TXD do gênero escolhido e as variantes de camisa, calça, tênis e face. A seleção é transportada pelos campos `shirtId`, `pantsId`, `shoesId` e `faceId` do snapshot `character`.
+
+Os arquivos são preparados e validados no cache nativo antes de qualquer tentativa de troca visual. Enquanto o registro standalone de clump/TXD não estiver confirmado para a versão exata do RenderWare do APK, o ped original permanece como fallback para evitar crash.
