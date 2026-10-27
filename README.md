@@ -38,6 +38,8 @@ files/ ou raiz/
 ├── SAMP/
 │   └── settings.ini
 ├── storage/
+├── mods/
+│   └── customdrop/
 └── texdb/
     └── gta3.img
 ```
@@ -106,9 +108,37 @@ ui.logo|capitalrio/ui/logo.bin|0123456789abcdef0123456789abcdef0123456789abcdef0
 
 O cliente valida caminho relativo, SHA-256, versão e tamanho antes de carregar o
 arquivo no cache nativo. Assets obrigatórios que falharem ficam fora do runtime;
-o cliente retorna ao fallback legado e registra o motivo no logcat. Na ausência do
-manifesto, o jogo também usa o fallback legado, portanto a instalação não depende
-de um arquivo que a release ainda não possua.
+o cliente retorna ao fallback legado e registra o motivo no logcat. Na ausência
+do manifesto, o jogo também usa o fallback legado, portanto a instalação não
+depende de um arquivo que a release ainda não possua.
+
+## CustomDrop: mods de personagem
+
+A base recebida em `CustomDrop.zip` é um recurso Lua do MTA. Os arquivos Lua usam
+`engineLoadDFF`, `engineLoadTXD`, `engineReplaceModel` e shaders do MTA, portanto
+não são executados diretamente pelo APK Android. O importador
+`tools/import_customdrop.py` extrai os assets de personagem suportados (`.dff`,
+`.txd` e `.png`) para `mods/customdrop/` e gera `asset_manifest.v1` com tamanho e
+SHA-256.
+
+Uso:
+
+```bash
+python3 tools/import_customdrop.py /caminho/CustomDrop.zip .
+```
+
+a importação atual contém 585 assets e aproximadamente 100 MB, separados por
+`maleskin`, `femaleskin` e `textures`. O Lua original permanece como referência da lógica MTA;
+a aplicação no APK será feita pelo `CapitalRioModLoader` nativo/RenderWare.
+Não chamamos isso de conversão para ACL: o equivalente no nosso cliente é um
+loader C++ controlado pelo manifesto, com validação de caminhos, tamanho e hash.
+
+## Pickup 1239
+
+O servidor usa o pickup GTA padrão `1239` como ponto interativo. A ação é
+registrada no gamemode em `gamemodes/modules/src/global/global_world.inc` e, ao
+encostar/interagir, abre o painel WebView Capital Rio. O evento touch nativo deve
+validar a mesma chave no servidor antes de disparar a ação.
 
 ## Validação pelo APK
 
